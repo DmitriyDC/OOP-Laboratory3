@@ -1,12 +1,12 @@
 ﻿#include <iostream>
 
-class CObject
+class CObject //Абстракный класс
 {
 public:
-	virtual void someMethod() {}
+	virtual void someMethod() {} //вызов метода класса
 };
 
-class CObjectArray {
+class CObjectArray { //массив объектов
 private:
 	int count;
 	CObject** objects;
@@ -21,81 +21,91 @@ public:
 	~CObjectArray() {
 		for (int i = 0; i < count; i++) {
 			if (objects[i] != nullptr)
-				delete (objects[i]);
+				delete (objects[i]); //удаление объектов массива
 		}
-		delete[] objects;
+		delete[] objects; //удаление массива
 	}
-	void setCObject(int index, CObject* _object) {
+	void setCObject(int index, CObject* _object) { //добавление объекта
+		if (index < 0 && index >= count) return;
 		if (objects[index] != nullptr) {
-			delete (objects[index]);
 			objects[index] = _object;
 		}
 		else {
 			objects[index] = _object;
 		}
 	}
-	CObject* getCObject(int index) {
-		return objects[index];
+	CObject* getCObject(int index) { //получение объекта
+		if (index < 0 && index >= count || objects[index] == nullptr)
+			return new CObject();
+		else
+			return objects[index];
 	}
-	void delCObject(int index) {
+	void delCObject(int index) { //удаление объекта
+		if (index < 0 && index >= count) return;
 		if (objects[index] != nullptr)
-			delete objects[index];
+			objects[index] = nullptr;
 	}
 	int getCount() {
 		return count;
 	}
 };
 
-class CCicle : public CObject {
+class CKruh : public CObject {
 private:
-	int rad;
+	int radius;
 public:
-	CCicle() {
-		rad = 10;
+	CKruh() {
+		radius = 10;
 	}
 	virtual void someMethod() override
 	{
-		printf("\nsomeMethod() : CCicle");
+		printf("\nsomeMethod() : CKruh");
 	}
 };
 
-class CAnimal : public CObject {
+class CZvire : public CObject {
 public:
 	virtual void someMethod() override
 	{
-		printf("\nsomeMethod() : CAnimal");
+		printf("\nsomeMethod() : CZvire");
 	}
 };
 
-class CLizard : public CAnimal {
+class CJesterka : public CZvire {
 private:
 	const char* name;
 	int age;
 public:
-	CLizard() {
-		name = "Vitalya";
-		age = 10;
+	CJesterka() {
+		name = "Andrey";
+		age = 45;
 	}
 	virtual void someMethod() override
 	{
-		printf("\nsomeMethod() : CLizard");
+		printf("\nsomeMethod() : CJesterka");
 	}
 };
 int main() {
 	setlocale(LC_ALL, "");
 
-	CObjectArray myStorage(10);
+	CObjectArray myStorage(1000);
 	for (int i = 0; i < myStorage.getCount(); i++) {
-		switch (rand() % 3)
+		int a = (rand() % myStorage.getCount());
+		switch (rand() % 5)
 		{
 		case 0:
-			myStorage.setCObject(i, new CCicle());
+			myStorage.setCObject(i, new CKruh());
 			break;
 		case 1:
-			myStorage.setCObject(i, new CAnimal());
+			myStorage.setCObject(i, new CZvire());
+			break;
+		case 2:
+			myStorage.setCObject(i, new CJesterka());
+			break;
+		case 3:
+			myStorage.delCObject(a);
 			break;
 		default:
-			myStorage.setCObject(i, new CLizard());
 			break;
 		}
 	}
